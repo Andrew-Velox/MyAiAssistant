@@ -4,30 +4,31 @@ from src.search import RAGSearch
 import logging
 import os
 
-
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-
 # Initialize Flask app
 app = Flask(__name__)
 
-
-# Enable CORS for production and development
-CORS(app, supports_credentials=True, origins="*")
-
+# Enable CORS for all origins (for development/testing)
+# For production, specify your actual domains
+CORS(app, resources={
+    r"/*": {
+        "origins": "*",  # Allow all origins for testing
+        "methods": ["GET", "POST", "OPTIONS"],
+        "allow_headers": ["Content-Type", "Authorization"]
+    }
+})
 
 # Initialize RAG Search globally
 rag_search = None
-
 
 # Serve test HTML page
 @app.route('/')
 def index():
     """Serve the test page"""
     return send_from_directory('.', 'test_api.html')
-
 
 def initialize_rag():
     """Initialize RAG system on startup"""
@@ -40,7 +41,6 @@ def initialize_rag():
         logger.error(f"Failed to initialize RAG system: {e}")
         raise e
 
-
 # Health check endpoint
 @app.route('/api/health', methods=['GET'])
 def health_check():
@@ -51,13 +51,9 @@ def health_check():
         "message": "RAG API is running"
     }), 200
 
-
 # Query endpoint
-@app.route('/api/query', methods=['POST', 'OPTIONS'])
+@app.route('/api/query', methods=['POST'])
 def query():
-    if request.method == 'OPTIONS':
-        # CORS preflight
-        return '', 204
     """
     Query the RAG system
     Expected JSON body:
@@ -114,13 +110,9 @@ def query():
             "message": str(e)
         }), 500
 
-
 # Search endpoint (returns raw results without LLM summarization)
-@app.route('/api/search', methods=['POST','OPTIONS'])
+@app.route('/api/search', methods=['POST'])
 def search():
-    if request.method == 'OPTIONS':
-        # CORS preflight
-        return '', 204
     """
     Search the vector store without LLM summarization
     Expected JSON body:
@@ -183,7 +175,6 @@ def search():
             "message": str(e)
         }), 500
 
-
 # Error handlers
 @app.errorhandler(404)
 def not_found(e):
@@ -191,13 +182,11 @@ def not_found(e):
         "error": "Endpoint not found"
     }), 404
 
-
 @app.errorhandler(405)
 def method_not_allowed(e):
     return jsonify({
         "error": "Method not allowed"
     }), 405
-
 
 @app.errorhandler(500)
 def internal_error(e):
@@ -205,17 +194,10 @@ def internal_error(e):
         "error": "Internal server error"
     }), 500
 
-
-# Initialize RAG system on module import (for Gunicorn)
-try:
-    initialize_rag()
-except Exception as e:
-    logger.error(f"Failed to initialize RAG on startup: {e}")
-    # Set rag_search to None, will show as not initialized
-    rag_search = None
-
-
 if __name__ == "__main__":
+    # Initialize RAG system before starting server
+    initialize_rag()
+    
     # Get configuration from environment variables
     host = os.getenv("FLASK_HOST", "0.0.0.0")
     port = int(os.getenv("FLASK_PORT", 5000))
