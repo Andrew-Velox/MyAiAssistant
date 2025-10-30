@@ -1,0 +1,68 @@
+---
+Mohabbat Marjuk Muttaki / Andrew Velox(maid up name) Comprehensive Profile
+---
+
+Personal and Contact Information
+Full Name: Mohabbat Marjuk Muttaki
+GitHub Username: Andrew-Velox
+Email: mohabbat.bd2020@gmail.com
+LinkedIn: linkedin.com/in/mohabbatvlx
+Personal Website/Portfolio: mohabbat.me
+Phone: +8801604646588
+Location: Dhaka, Bangladesh
+Personal Quirk: Love to Ignoring You
+Languages Spoken: Bangla (🇧🇩), English (🇺🇲), Arabic (🇸🇦)
+
+Education
+Degree: BSc in Computer Science & Engineering
+Institution: Green University of Bangladesh (GUB)
+Location: Narayangonj, Bangladesh
+Duration: November 2023 - Present
+Current CGPA: 3.00
+
+Technical Skills
+Programming Languages: C, C++, Java, JavaScript, Python, PHP
+Frontend Technologies: HTML, CSS, Tailwind CSS, ReactJs, NextJs
+Backend Technologies: Django, Django REST Framework, PostgreSQL, MySQL, RESTful API design, MVC/MVT
+AI/ML & Automation: n8n Automation, AI API Integration, RAG (learning)
+Tools: Git, GitHub, Figma, Chrome Dev Tools, Canva
+
+Achievements & Competitive Programming
+Champion: Inter Dept Programming Contest 2024
+Champion: Inter University Beginners Programming Contest 2024
+Codechef Rating: 2-Star (1500+)
+Codeforces Rating: 1000+
+ICPC Regionalist: 1x (2024)
+IUPC Contestant: 3x (2024, 2025)
+Problems Solved: 1000+ problems solved across online judges
+Problem Setter: Inter University Junior Programming Contests
+
+Experience & Leadership
+Executive Role: Programming and Development Secretary, Computer Club of GUB
+Treasurer Role: Treasurer at Programming Club of Green University of Bangladesh
+
+Certifications
+Google IT Automation with Python (Coursera): Feb 2023 - Aug 2023
+Django Software Development (Phitron): Nov 2023 - Feb 2025
+
+Key Projects
+
+Project Name: Discord Chat System
+Description: Developed a real-time chat platform inspired by Discord using Django Channels and HTMX. Integrated n8n webhooks and AI characters for dynamic, context-aware interactions. Currently extending with RAG-based retrieval for intelligent responses.
+Technologies: Django, Channels, HTMX, n8n, AI APIs
+
+Project Name: Code Fetcher Extension
+Description: A Chrome extension that fetches users' latest accepted submissions from the Codeforces API and generates a ZIP file for upload to their GitHub profile.
+Achievement: Achieved 50+ active users on the Chrome Web Store.
+Technologies: Python, JavaScript, HTML
+
+Project Name: E-Commerce Website
+Description: Developed a full-stack e-commerce platform. Used Django REST Framework for backend APIs and managed modular apps (users, products, orders, cart, wishlist, reviews).
+Technologies: Django, Django REST Framework, NextJs, Tailwind CSS
+
+Project Name: E-Learning Website
+Description: Created a dynamic E-Learning platform focused on front-end development. Implemented a core feature using PHP to suggest relevant video content to users. Built a responsive user interface with HTML, CSS, and JavaScript.
+Technologies: HTML, CSS, JavaScript, Bootstrap, PHP
+
+---
+End of Comprehensive Profile

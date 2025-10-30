@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAG API Tester</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+        
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #dc3545;
+            animation: pulse 2s infinite;
+        }
+        
+        .status-dot.online {
+            background: #28a745;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+        
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e8ed;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input[type="text"]:focus,
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+        
+        button {
+            flex: 1;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover:not(:disabled) {
+            background: #5a6268;
+        }
+        
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .response-box {
+            margin-top: 30px;
+            padding: 25px;
+            border-radius: 10px;
+            display: none;
+        }
+        
+        .response-box.show {
+            display: block;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .response-box.success {
+            background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+            border: 2px solid #28a745;
+        }
+        
+        .response-box.error {
+            background: #f8d7da;
+            border: 2px solid #dc3545;
+            color: #721c24;
+        }
+        
+        .response-title {
+            font-weight: 700;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+        
+        .response-content {
+            line-height: 1.8;
+            white-space: pre-wrap;
+        }
+        
+        .loader {
+            text-align: center;
+            padding: 20px;
+            display: none;
+        }
+        
+        .loader.show {
+            display: block;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .suggestions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .suggestion-chip {
+            padding: 8px 16px;
+            background: #e9ecef;
+            border: 1px solid #dee2e6;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        
+        .suggestion-chip:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🤖 RAG API Tester</h1>
+        <p class="subtitle">Test your RAG system API</p>
+        
+        <div class="status" id="status">
+            <div class="status-dot" id="statusDot"></div>
+            <span id="statusText">Checking API status...</span>
+        </div>
+        
+        <div class="form-group">
+            <label for="query">Your Question</label>
+            <input 
+                type="text" 
+                id="query" 
+                placeholder="Ask about Mohabbat's background, education, skills..."
+                autocomplete="off"
+            >
+            <div class="suggestions">
+                <div class="suggestion-chip" onclick="setQuery('Which department does Mohabbat study?')">
+                    Department
+                </div>
+                <div class="suggestion-chip" onclick="setQuery('What are Mohabbat skills?')">
+                    Skills
+                </div>
+                <div class="suggestion-chip" onclick="setQuery('Tell me about Mohabbat background')">
+                    Background
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label for="topK">Number of Results (top_k)</label>
+            <input 
+                type="number" 
+                id="topK" 
+                value="5" 
+                min="1" 
+                max="20"
+            >
+        </div>
+        
+        <div class="button-group">
+            <button class="btn-primary" onclick="queryWithLLM()" id="queryBtn">
+                🤖 Query with AI
+            </button>
+            <button class="btn-secondary" onclick="searchRaw()" id="searchBtn">
+                🔍 Raw Search
+            </button>
+        </div>
+        
+        <div class="loader" id="loader">
+            <div class="spinner"></div>
+            <p style="margin-top: 10px; color: #666;">Processing...</p>
+        </div>
+        
+        <div class="response-box" id="responseBox">
+            <div class="response-title" id="responseTitle"></div>
+            <div class="response-content" id="responseContent"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5000';
+        
+        // Check API health on load
+        async function checkHealth() {
+            try {
+                const response = await fetch(`${API_URL}/api/health`);
+                const data = await response.json();
+                
+                if (data.status === 'healthy') {
+                    document.getElementById('statusDot').classList.add('online');
+                    document.getElementById('statusText').textContent = '✓ API is online and ready';
+                } else {
+                    document.getElementById('statusText').textContent = '⚠ API responded but not healthy';
+                }
+            } catch (error) {
+                document.getElementById('statusText').textContent = '✗ API is offline. Make sure Flask server is running.';
+            }
+        }
+        
+        function setQuery(text) {
+            document.getElementById('query').value = text;
+        }
+        
+        function showLoader() {
+            document.getElementById('loader').classList.add('show');
+            document.getElementById('responseBox').classList.remove('show');
+            document.getElementById('queryBtn').disabled = true;
+            document.getElementById('searchBtn').disabled = true;
+        }
+        
+        function hideLoader() {
+            document.getElementById('loader').classList.remove('show');
+            document.getElementById('queryBtn').disabled = false;
+            document.getElementById('searchBtn').disabled = false;
+        }
+        
+        function showResponse(title, content, isError = false) {
+            const box = document.getElementById('responseBox');
+            const titleEl = document.getElementById('responseTitle');
+            const contentEl = document.getElementById('responseContent');
+            
+            titleEl.textContent = title;
+            contentEl.textContent = content;
+            
+            box.classList.remove('success', 'error');
+            box.classList.add(isError ? 'error' : 'success');
+            box.classList.add('show');
+        }
+        
+        async function queryWithLLM() {
+            const query = document.getElementById('query').value.trim();
+            const topK = parseInt(document.getElementById('topK').value);
+            
+            if (!query) {
+                alert('Please enter a question');
+                return;
+            }
+            
+            showLoader();
+            
+            try {
+                const response = await fetch(`${API_URL}/api/query`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        query: query,
+                        top_k: topK
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    showResponse(
+                        '🤖 AI Response',
+                        data.summary
+                    );
+                } else {
+                    showResponse(
+                        '❌ Error',
+                        data.error || 'Unknown error occurred',
+                        true
+                    );
+                }
+            } catch (error) {
+                showResponse(
+                    '❌ Connection Error',
+                    `Failed to connect to API: ${error.message}\n\nMake sure the Flask server is running on port 5000.`,
+                    true
+                );
+            } finally {
+                hideLoader();
+            }
+        }
+        
+        async function searchRaw() {
+            const query = document.getElementById('query').value.trim();
+            const topK = parseInt(document.getElementById('topK').value);
+            
+            if (!query) {
+                alert('Please enter a question');
+                return;
+            }
+            
+            showLoader();
+            
+            try {
+                const response = await fetch(`${API_URL}/api/search`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        query: query,
+                        top_k: topK
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    let content = `Found ${data.results.length} results:\n\n`;
+                    
+                    data.results.forEach((result, index) => {
+                        content += `Result ${index + 1} (Distance: ${result.distance.toFixed(4)}):\n`;
+                        content += `${result.text.substring(0, 200)}...\n\n`;
+                    });
+                    
+                    showResponse('🔍 Search Results', content);
+                } else {
+                    showResponse(
+                        '❌ Error',
+                        data.error || 'Unknown error occurred',
+                        true
+                    );
+                }
+            } catch (error) {
+                showResponse(
+                    '❌ Connection Error',
+                    `Failed to connect to API: ${error.message}\n\nMake sure the Flask server is running on port 5000.`,
+                    true
+                );
+            } finally {
+                hideLoader();
+            }
+        }
+        
+        // Allow Enter key to submit
+        document.getElementById('query').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                queryWithLLM();
+            }
+        });
+        
+        // Check health on load
+        checkHealth();
+    </script>
+</body>
+</html>
