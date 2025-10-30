@@ -6,8 +6,8 @@ Run this after starting the Flask server to test all endpoints
 import requests
 import json
 
-BASE_URL = "http://localhost:5000"
-# BASE_URL = "https://myaiassistant-ijpe.onrender.com"
+# BASE_URL = "http://localhost:5000"
+BASE_URL = "https://myaiassistant-ijpe.onrender.com"
 
 def test_health():
     """Test health check endpoint"""
