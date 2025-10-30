@@ -7,7 +7,7 @@ import requests
 import json
 
 # BASE_URL = "http://localhost:5000"
-BASE_URL = "https://myaïassistant-ijpe.onrender.com"
+BASE_URL = "https://myaiassistant-ijpe.onrender.com"
 
 def test_health():
     """Test health check endpoint"""
