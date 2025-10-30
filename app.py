@@ -11,11 +11,16 @@ logger = logging.getLogger(__name__)
 # Initialize Flask app
 app = Flask(__name__)
 
-# Enable CORS for all origins (for development/testing)
-# For production, specify your actual domains
+# Enable CORS for production and development
 CORS(app, resources={
     r"/*": {
-        "origins": "*",  # Allow all origins for testing
+        "origins": [
+            "http://localhost:3000",  # Local Next.js dev
+            "http://localhost:3001",  # Alternative local port
+            "https://www.mohabbat.me",  # Your portfolio (with www)
+            "https://mohabbat.me",  # Your portfolio (without www)
+            "https://*.vercel.app",  # Vercel preview deployments
+        ],
         "methods": ["GET", "POST", "OPTIONS"],
         "allow_headers": ["Content-Type", "Authorization"]
     }
