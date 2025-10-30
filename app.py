@@ -194,10 +194,10 @@ def internal_error(e):
         "error": "Internal server error"
     }), 500
 
+# Call the function in the global scope so Gunicorn runs it
+initialize_rag() # <--- MOVE IT HERE
+
 if __name__ == "__main__":
-    # Initialize RAG system before starting server
-    initialize_rag()
-    
     # Get configuration from environment variables
     host = os.getenv("FLASK_HOST", "0.0.0.0")
     port = int(os.getenv("FLASK_PORT", 5000))
