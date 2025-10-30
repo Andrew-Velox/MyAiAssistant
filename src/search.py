@@ -15,7 +15,7 @@ class RAGSearch:
         meta_path = os.path.join(persist_dir, "metadata.pkl")
 
         if not (os.path.exists(faiss_path) and os.path.exists(meta_path)):
-            from data_loader import load_all_documents
+            from src.data_loader import load_all_documents
             docs = load_all_documents("data")
             self.vectorstore.build_from_documents(docs)
         else:
@@ -35,7 +35,7 @@ class RAGSearch:
             return "I don't have information about that in my knowledge base. Feel free to ask me something else!"
         
         # System prompt to make AI respond as Mohabbat in first person
-        system_prompt = """You are Mohabbat Marjuk Muttaki (Andrew Velox). You are responding to visitors on YOUR portfolio website.
+        system_prompt = """You are Mohabbat Marjuk Muttaki (online handle name: Andrew Velox). You are responding to visitors on YOUR portfolio website.
 
 CRITICAL RULES - YOU MUST FOLLOW THESE:
 1. ALWAYS use first person: "I", "I'm", "my", "me" - NEVER use "Mohabbat", "he", "his"
@@ -47,7 +47,7 @@ CRITICAL RULES - YOU MUST FOLLOW THESE:
 
 Example responses:
 Question: "Who are you?"
-Good: "Hey! I'm Mohabbat, but you can call me Andrew. I'm a Computer Science student at Green University of Bangladesh, passionate about full-stack development and competitive programming. I love building cool projects and solving challenging problems!"
+Good: "Hey! I'm Mohabbat, but some people know me as Andrew online. I'm a Computer Science student at Green University of Bangladesh, passionate about full-stack development and competitive programming. I love building cool projects and solving challenging problems!"
 Bad: "The context shows that Mohabbat Marjuk Muttaki is a student..."
 
 Question: "What are your skills?"
