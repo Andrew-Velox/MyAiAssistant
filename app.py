@@ -12,19 +12,7 @@ logger = logging.getLogger(__name__)
 app = Flask(__name__)
 
 # Enable CORS for production and development
-CORS(app, resources={
-    r"/*": {
-        "origins": [
-            "http://localhost:3000",  # Local Next.js dev
-            "http://localhost:3001",  # Alternative local port
-            "https://www.mohabbat.me",  # Your portfolio (with www)
-            "https://mohabbat.me",  # Your portfolio (without www)
-            "https://*.vercel.app",  # Vercel preview deployments
-        ],
-        "methods": ["GET", "POST", "OPTIONS"],
-        "allow_headers": ["Content-Type", "Authorization"]
-    }
-})
+CORS(app, supports_credentials=True, origins="*")
 
 # Initialize RAG Search globally
 rag_search = None
@@ -57,8 +45,11 @@ def health_check():
     }), 200
 
 # Query endpoint
-@app.route('/api/query', methods=['POST'])
+@app.route('/api/query', methods=['POST', 'OPTIONS'])
 def query():
+    if request.method == 'OPTIONS':
+        # CORS preflight
+        return '', 204
     """
     Query the RAG system
     Expected JSON body:
@@ -116,8 +107,11 @@ def query():
         }), 500
 
 # Search endpoint (returns raw results without LLM summarization)
-@app.route('/api/search', methods=['POST'])
+@app.route('/api/search', methods=['POST','OPTIONS'])
 def search():
+    if request.method == 'OPTIONS':
+        # CORS preflight
+        return '', 204
     """
     Search the vector store without LLM summarization
     Expected JSON body:
