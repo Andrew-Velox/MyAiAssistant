@@ -4,7 +4,7 @@ import numpy as np
 import pickle
 from typing import List, Any
 from sentence_transformers import SentenceTransformer
-from src.embedding import EmbeddingPipeline
+# from src.embedding import EmbeddingPipeline  <- REMOVED
 
 
 class FaissVectorStore:
@@ -14,23 +14,15 @@ class FaissVectorStore:
         self.index = None
         self.metadata = []
         self.embedding_model = embedding_model
-        self.model = SentenceTransformer(embedding_model)
+        # This model is still needed to embed the *user's query*
+        self.model = SentenceTransformer(embedding_model) 
         self.chunk_size = chunk_size
         self.chunk_overlap = chunk_overlap
         print(f"[INFO] Initialized FaissVectorStore with model: {embedding_model}")
     
+    # build_from_documents method <- REMOVED
 
-    def build_from_documents(self, documents: List[Any]):
-        print(f"[INFO] Building vector store from {len(documents)} documents...")
-        emb_pipe = EmbeddingPipeline(model_name=self.embedding_model, chunk_size=self.chunk_size, chunk_overlap=self.chunk_overlap)
-        chunks = emb_pipe.chunk_documents(documents)
-        embeddings = emb_pipe.embed_chunks(chunks)
-        metadata = [{"text": chunk.page_content} for chunk in chunks]
-        self.add_embeddings(np.array(embeddings).astype('float32'), metadata)
-        self.save()
-        print(f"[INFO] Vector store built and saved to {self.persist_dir}")
-
-
+    # add_embeddings method (Can be removed if you want, but safe to keep)
     def add_embeddings(self, embeddings: np.ndarray, metadata: List[Any] = None):
         dim = embeddings.shape[1]
         if self.index is None:
@@ -76,5 +68,3 @@ class FaissVectorStore:
         print(f"[INFO] Searching for top {top_k} results for query: {query_text}")
         query_emb = self.model.encode([query_text]).astype('float32')
         return self.search(query_emb,top_k=top_k)
-    
-

@@ -9,21 +9,24 @@ load_dotenv()
 class RAGSearch:
     def __init__(self, persist_dir: str = "faiss_store", embedding_model: str = "all-MiniLM-L6-v2", llm_model: str = "gemma2-9b-it"):
         self.vectorstore = FaissVectorStore(persist_dir=persist_dir, embedding_model=embedding_model)
-        # load or build vectorStore
-    
+        
+        # Check if the store exists before trying to load
         faiss_path = os.path.join(persist_dir, "faiss.index")
         meta_path = os.path.join(persist_dir, "metadata.pkl")
 
         if not (os.path.exists(faiss_path) and os.path.exists(meta_path)):
-            from src.data_loader import load_all_documents
-            docs = load_all_documents("data")
-            self.vectorstore.build_from_documents(docs)
-        else:
-            self.vectorstore.load()
+            print(f"[ERROR] FAISS store not found at {persist_dir}.")
+            print("Please run your indexing/build script first before starting the server.")
+            raise FileNotFoundError(f"FAISS store not found at {persist_dir}")
         
+        # Always load the pre-built vector store
+        print("[INFO] Loading existing vector store...")
+        self.vectorstore.load()
+        print("[INFO] Vector store loaded successfully.")
+        
+        # Load the LLM
         groq_api_key = os.getenv("GROQ_API_KEY")
-
-        self.llm=ChatGroq(groq_api_key=groq_api_key,model_name="llama-3.1-8b-instant")
+        self.llm = ChatGroq(groq_api_key=groq_api_key, model_name="llama-3.1-8b-instant")
         print(f"[INFO] Loaded LLM model: {llm_model}")
 
     
